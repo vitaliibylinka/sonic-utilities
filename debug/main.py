@@ -1,6 +1,8 @@
 import click
 import subprocess
 
+from . import stp
+
 def run_command(command, pager=False):
     click.echo(click.style("Command: ", fg='cyan') + click.style(command, fg='green'))
     p = subprocess.Popen(command, shell=True, text=True, stdout=subprocess.PIPE)
@@ -21,6 +23,10 @@ def cli():
     """SONiC command line - 'debug' command"""
     pass
 
+#
+# STP
+#
+cli.add_command(stp.spanning_tree)
 
 p = subprocess.check_output(["sudo vtysh -c 'show version'"], shell=True, text=True)
 if 'FRRouting' in p:

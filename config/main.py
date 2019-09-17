@@ -42,6 +42,7 @@ from . import nat
 from . import vlan
 from . import vxlan
 from . import plugins
+from . import stp
 from .config_mgmt import ConfigMgmtDPB
 from . import mclag 
 
@@ -993,6 +994,7 @@ config.add_command(muxcable.muxcable)
 config.add_command(nat.nat)
 config.add_command(vlan.vlan)
 config.add_command(vxlan.vxlan)
+config.add_command(stp.spanning_tree)
 
 #add mclag commands
 config.add_command(mclag.mclag)

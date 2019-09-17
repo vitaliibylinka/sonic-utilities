@@ -604,18 +604,45 @@ if [ -x ${LOG_SSD_HEALTH} ]; then
 fi
 
 
-if [[ -f ${SHUTDOWN_ORDER_FILE} ]]; then
-    SERVICES_TO_STOP="$(cat ${SHUTDOWN_ORDER_FILE})"
-else
-    # TODO: to be removed once sonic-buildimage change is in
-    if [[ "${REBOOT_TYPE}" == "fast-reboot" ]]; then
-        SERVICES_TO_STOP="nat radv bgp sflow lldp swss teamd syncd"
-    elif [[ "${REBOOT_TYPE}" == "fastfast-reboot" || "${REBOOT_TYPE}" == "warm-reboot" ]]; then
-        SERVICES_TO_STOP="nat radv bgp sflow lldp teamd swss syncd"
-    else
-        error "Unexpected reboot type ${REBOOT_TYPE}"
-        exit $EXIT_FAILURE
-    fi
+# Kill nat docker after saving the conntrack table
+debug "Stopping nat ..."
+/usr/local/bin/dump_nat_entries.py
+docker kill nat > /dev/null || true
+systemctl stop nat
+debug "Stopped nat ..."
+
+# Kill radv before stopping BGP service to prevent announcing our departure.
+debug "Stopping radv service..."
+systemctl stop radv
+debug "Stopped radv service..."
+
+# Kill bgpd to start the bgp graceful restart procedure
+debug "Stopping bgp ..."
+systemctl stop bgp
+debug "Stopped  bgp ..."
+
+# Kill sflow docker	
+debug "Stopping sflow ..."	
+container kill sflow &> /dev/null || debug "Docker sflow is not running ($?) ..."
+systemctl stop sflow
+debug "Stopped sflow ..."
+
+# Kill lldp, otherwise it sends informotion about reboot.
+# We call `docker kill lldp` to ensure the container stops as quickly as possible,
+# then immediately call `systemctl stop lldp` to prevent the service from
+# restarting the container automatically.
+container kill lldp &> /dev/null || debug "Docker lldp is not running ($?) ..."
+systemctl stop lldp
+
+# Kill stp docker
+debug "Stopping stp ..."
+docker kill stp > /dev/null
+debug "Stopped stp ..."
+
+if [[ "$REBOOT_TYPE" = "fast-reboot" ]]; then
+    debug "Stopping teamd ..."
+    systemctl stop teamd
+    debug "Stopped teamd ..."
 fi
 
 for service in ${SERVICES_TO_STOP}; do

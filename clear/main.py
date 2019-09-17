@@ -5,6 +5,7 @@ import sys
 
 import click
 
+from . import stp
 from utilities_common import util_base
 
 from . import plugins
@@ -123,6 +124,11 @@ CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help', '-?'])
 def cli():
     """SONiC command line - 'Clear' command"""
     pass
+
+#
+# 'STP'
+#
+cli.add_command(stp.spanning_tree)
 
 #
 # 'ip' group ###

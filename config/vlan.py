@@ -3,6 +3,7 @@ import utilities_common.cli as clicommon
 
 from time import sleep
 from .utils import log
+from . import stp
 
 #
 # 'vlan' group ('config vlan ...')
@@ -28,6 +29,9 @@ def add_vlan(db, vid):
         ctx.fail("{} already exists".format(vlan))
 
     db.cfgdb.set_entry('VLAN', vlan, {'vlanid': vid})
+    # Enable STP on VLAN if PVST is enabled globally
+    if stp.is_global_stp_enabled(db.cfgdb):
+        stp.vlan_enable_stp(db.cfgdb, vlan)
 
 @vlan.command('del')
 @click.argument('vid', metavar='<vid>', required=True, type=int)
@@ -58,6 +62,12 @@ def del_vlan(db, vid):
         ctx.fail("VLAN ID {} can not be removed. First remove all members assigned to this VLAN.".format(vid))
         
     db.cfgdb.set_entry('VLAN', 'Vlan{}'.format(vid), None)
+    # Delete STP_VLAN & STP_VLAN_PORT entries when VLAN is deleted.
+    db.cfgdb.set_entry('STP_VLAN', 'Vlan{}'.format(vid), None)
+    stp_intf_list = stp.get_intf_list_from_stp_vlan_intf_table(db.cfgdb, 'Vlan{}'.format(vid))
+    for intf_name in stp_intf_list:
+        key = 'Vlan{}'.format(vid) + "|" + intf_name
+        db.cfgdb.set_entry('STP_VLAN_PORT', key, None)
 
 def restart_ndppd():
     verify_swss_running_cmd = "docker container inspect -f '{{.State.Status}}' swss"
@@ -153,6 +163,12 @@ def add_vlan_member(db, vid, port, untagged):
     if (clicommon.interface_is_untagged_member(db.cfgdb, port) and untagged):
         ctx.fail("{} is already untagged member!".format(port))
 
+    # If port is being made L2 port, enable STP
+    if stp.is_global_stp_enabled(db.cfgdb) is True:
+        vlan_list_for_intf = stp.get_vlan_list_for_interface(db.cfgdb, port)
+        if len(vlan_list_for_intf) == 0:
+            stp.interface_enable_stp(db.cfgdb, port)
+
     db.cfgdb.set_entry('VLAN_MEMBER', (vlan, port), {'tagging_mode': "untagged" if untagged else "tagged" })
 
 @vlan_member.command('del')
@@ -184,4 +200,11 @@ def del_vlan_member(db, vid, port):
         ctx.fail("{} is not a member of {}".format(port, vlan))
 
     db.cfgdb.set_entry('VLAN_MEMBER', (vlan, port), None)
+    # If port is being made non-L2 port, disable STP
+    if stp.is_global_stp_enabled(db.cfgdb) is True:
+        vlan_interface = str(vlan) + "|" + port
+        db.cfgdb.set_entry('STP_VLAN_PORT', vlan_interface, None)
+        vlan_list_for_intf = stp.get_vlan_list_for_interface(db.cfgdb, port)
+        if len(vlan_list_for_intf) == 0:
+            db.cfgdb.set_entry('STP_PORT', port, None)
 
