@@ -155,9 +155,9 @@
 * [Troubleshooting Commands](#troubleshooting-commands)
 * [Routing Stack](#routing-stack)
 * [Quagga BGP Show Commands](#Quagga-BGP-Show-Commands)
-* [ZTP Configuration And Show Commands](#ztp-configuration-and-show-commands)
-  * [ ZTP show commands](#ztp-show-commands)
-  * [ZTP configuration commands](#ztp-configuration-commands)
+* [STP Configuration And Show Commands](#stp-configuration-and-show-commands)
+  * [ STP show commands](#stp-show-commands)
+  * [STP configuration commands](#stp-configuration-commands)
 
 ## Document History
 
@@ -9465,32 +9465,32 @@ This command displays the routing policy that takes precedence over the other ro
   ```
 Go Back To [Beginning of the document](#) or [Beginning of this section](#quagga-bgp-show-commands)
 
-# ZTP Configuration And Show Commands
+# STP Configuration And Show Commands
 
 This section explains all the Zero Touch Provisioning commands that are supported in SONiC.
 
-## ZTP show commands
+## STP show commands
 
 
-This command displays the current ZTP configuration of the switch. It also displays detailed information about current state of a ZTP session. It displays information related to all configuration sections as defined in the switch provisioning information discovered in a particular ZTP session.
+This command displays the current STP configuration of the switch. It also displays detailed information about current state of a STP session. It displays information related to all configuration sections as defined in the switch provisioning information discovered in a particular STP session.
 
 - Usage:
-  show ztp status
+  show stp status
 
-  show ztp status --verbose
+  show stp status --verbose
 
 - Example:
 
 ```
-root@B1-SP1-7712:/home/admin# show ztp status
-ZTP Admin Mode : True
-ZTP Service    : Inactive
-ZTP Status     : SUCCESS
-ZTP Source     : dhcp-opt67 (eth0)
+root@B1-SP1-7712:/home/admin# show stp status
+STP Admin Mode : True
+STP Service    : Inactive
+STP Status     : SUCCESS
+STP Source     : dhcp-opt67 (eth0)
 Runtime        : 05m 31s
 Timestamp      : 2019-09-11 19:12:24 UTC
 
-ZTP Service is not running
+STP Service is not running
 
 01-configdb-json: SUCCESS
 02-connectivity-check: SUCCESS
@@ -9498,20 +9498,20 @@ ZTP Service is not running
 Use the verbose option to display more detailed information.
 
 ```
-root@B1-SP1-7712:/home/admin# show ztp status --verbose
-Command: ztp status --verbose
+root@B1-SP1-7712:/home/admin# show stp status --verbose
+Command: stp status --verbose
 ========================================
-ZTP
+STP
 ========================================
-ZTP Admin Mode : True
-ZTP Service    : Inactive
-ZTP Status     : SUCCESS
-ZTP Source     : dhcp-opt67 (eth0)
+STP Admin Mode : True
+STP Service    : Inactive
+STP Status     : SUCCESS
+STP Source     : dhcp-opt67 (eth0)
 Runtime        : 05m 31s
 Timestamp      : 2019-09-11 19:12:16 UTC
-ZTP JSON Version : 1.0
+STP JSON Version : 1.0
 
-ZTP Service is not running
+STP Service is not running
 
 ----------------------------------------
 01-configdb-json
@@ -9534,82 +9534,82 @@ Ignore Result   : False
 
 - Description
 
-  - **ZTP Admin Mode** - Displays if the ZTP feature is administratively enabled or disabled. Possible values are True or False. This value is configurable using "config ztp enabled" and "config ztp disable" commands.
-  - **ZTP Service** - Displays the ZTP service status. The following are possible values this field can display:
-    - *Active Discovery*: ZTP service is operational and is performing DHCP discovery to learn switch provisioning information
-    - *Processing*: ZTP service has discovered switch provisioning information and is processing it
-  - **ZTP Status** - Displays the current state and result of ZTP session. The following are possible values this field can display:
-    - *IN-PROGRESS*: ZTP session is currently in progress. ZTP service is processing switch provisioning information.
-    - *SUCCESS*: ZTP service has successfully processed the switch provisioning information.
-    - *FAILED*:  ZTP service has failed to process the switch provisioning information.
-    - *Not Started*: ZTP service has not started processing the discovered switch provisioning information.
-  - **ZTP Source** - Displays the DHCP option and then interface name from which switch provisioning information has been discovered.
-  - **Runtime** - Displays the time taken for ZTP process to complete from start to finish. For individual configuration sections it indicates the time taken to process the associated configuration section.
+  - **STP Admin Mode** - Displays if the STP feature is administratively enabled or disabled. Possible values are True or False. This value is configurable using "config stp enabled" and "config stp disable" commands.
+  - **STP Service** - Displays the STP service status. The following are possible values this field can display:
+    - *Active Discovery*: STP service is operational and is performing DHCP discovery to learn switch provisioning information
+    - *Processing*: STP service has discovered switch provisioning information and is processing it
+  - **STP Status** - Displays the current state and result of STP session. The following are possible values this field can display:
+    - *IN-PROGRESS*: STP session is currently in progress. STP service is processing switch provisioning information.
+    - *SUCCESS*: STP service has successfully processed the switch provisioning information.
+    - *FAILED*:  STP service has failed to process the switch provisioning information.
+    - *Not Started*: STP service has not started processing the discovered switch provisioning information.
+  - **STP Source** - Displays the DHCP option and then interface name from which switch provisioning information has been discovered.
+  - **Runtime** - Displays the time taken for STP process to complete from start to finish. For individual configuration sections it indicates the time taken to process the associated configuration section.
   - **Timestamp** - Displays the date/time stamp when the status field has last changed.
-  - **ZTP JSON Version** - Version of ZTP JSON file used for describing switch provisioning information.
+  - **STP JSON Version** - Version of STP JSON file used for describing switch provisioning information.
   - **Status** - Displays the current state and result of a configuration section. The following are possible values this field can display:
     - *IN-PROGRESS*: Corresponding configuration section is currently being processed.
     - *SUCCESS*: Corresponding configuration section was processed successfully.
     - *FAILED*:  Corresponding configuration section failed to execute successfully.
-    - *Not Started*: ZTP service has not started processing the corresponding configuration section.
+    - *Not Started*: STP service has not started processing the corresponding configuration section.
     - *DISABLED*: Corresponding configuration section has been marked as disabled and will not be processed.
   - **Exit Code** - Displays the program exit code of the configuration section executed. Non-zero exit code indicates that the configuration section has failed to execute successfully.
-  - **Ignore Result** - If this value is True, the result of the corresponding configuration section is ignored and not used to evaluate the overall ZTP result.
-  - **Activity String** - In addition to above information an activity string is displayed indicating the current action being performed by the ZTP service and how much time it has been performing the mentioned activity. Below is an example.
+  - **Ignore Result** - If this value is True, the result of the corresponding configuration section is ignored and not used to evaluate the overall STP result.
+  - **Activity String** - In addition to above information an activity string is displayed indicating the current action being performed by the STP service and how much time it has been performing the mentioned activity. Below is an example.
     -    (04m 12s) Discovering provisioning data
 
-## ZTP configuration commands
+## STP configuration commands
 
-This sub-section explains the list of the configuration options available for ZTP.
+This sub-section explains the list of the configuration options available for STP.
 
 
 
-**config ztp enable**
+**config stp enable**
 
-Use this command to enable ZTP administrative mode
+Use this command to enable STP administrative mode
 
 - Example:
 
 ```
-root@sonic:/home/admin# config ztp enable
-Running command: ztp enable
+root@sonic:/home/admin# config stp enable
+Running command: stp enable
 ```
 
 
 
-**config ztp disable**
+**config stp disable**
 
-Use this command to disable ZTP administrative mode.  This command can also be used to abort a current ZTP session and load the factory default switch configuration.
+Use this command to disable STP administrative mode.  This command can also be used to abort a current STP session and load the factory default switch configuration.
 
 - Usage:
-  config ztp disable
+  config stp disable
 
-  config ztp disable -y
+  config stp disable -y
 
 - Example:
 
 ```
-root@sonic:/home/admin# config ztp disable
-Active ZTP session will be stopped and disabled, continue? [y/N]: y
-Running command: ztp disable -y
+root@sonic:/home/admin# config stp disable
+Active STP session will be stopped and disabled, continue? [y/N]: y
+Running command: stp disable -y
 ```
 
 
-**config ztp run**
+**config stp run**
 
-Use this command to manually restart a new ZTP session.  This command deletes the existing */etc/sonic/config_db.json* file and stats ZTP service. It also erases the previous ZTP session data. ZTP configuration is loaded on to the switch and ZTP discovery is performed.
+Use this command to manually restart a new STP session.  This command deletes the existing */etc/sonic/config_db.json* file and stats STP service. It also erases the previous STP session data. STP configuration is loaded on to the switch and STP discovery is performed.
 
 - Usage:
-  config ztp run
+  config stp run
 
-  config ztp run -y
+  config stp run -y
 
 - Example:
 
 ```
-root@sonic:/home/admin# config ztp run
-ZTP will be restarted. You may lose switch data and connectivity, continue? [y/N]: y
-Running command: ztp run -y
+root@sonic:/home/admin# config stp run
+STP will be restarted. You may lose switch data and connectivity, continue? [y/N]: y
+Running command: stp run -y
 ```
 
-Go Back To [Beginning of the document](#SONiC-COMMAND-LINE-INTERFACE-GUIDE) or [Beginning of this section](#ztp-configuration-and-show-commands)
+Go Back To [Beginning of the document](#SONiC-COMMAND-LINE-INTERFACE-GUIDE) or [Beginning of this section](#stp-configuration-and-show-commands)

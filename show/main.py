@@ -1670,17 +1670,17 @@ def line(brief, verbose):
 
 
 #
-# 'ztp status' command ("show ztp status")
+# 'stp status' command ("show stp status")
 #
 @cli.command()
 @click.argument('status', required=False, type=click.Choice(["status"]))
 @click.option('--verbose', is_flag=True, help="Enable verbose output")
-def ztp(status, verbose):
+def stp(status, verbose):
     """Show Zero Touch Provisioning status"""
-    if os.path.isfile('/usr/bin/ztp') is False:
-        exit("ZTP feature unavailable in this image version")
+    if os.path.isfile('/usr/bin/stp') is False:
+        exit("STP feature unavailable in this image version")
 
-    cmd = "ztp status"
+    cmd = "stp status"
     if verbose:
        cmd = cmd + " --verbose"
     run_command(cmd, display_cmd=verbose)
